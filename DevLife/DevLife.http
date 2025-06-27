@@ -1,0 +1,6 @@
+@DevLife_HostAddress = http://localhost:5103
+
+GET {{DevLife_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
