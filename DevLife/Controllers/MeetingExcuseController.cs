@@ -21,9 +21,6 @@ public class MeetingExcuseController : ControllerBase
         _logger = logger;
     }
 
-    /// <summary>
-    /// Helper method to safely check session and authentication
-    /// </summary>
     private (bool IsValid, string Username, string ErrorMessage) ValidateSession()
     {
         try
@@ -55,9 +52,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Get meeting excuse dashboard with user stats and trending excuses
-    /// </summary>
     [HttpGet("dashboard")]
     public async Task<ActionResult<MeetingExcuseDashboardDto>> GetDashboard()
     {
@@ -95,9 +89,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Generate a random meeting excuse based on criteria
-    /// </summary>
     [HttpPost("generate")]
     public async Task<ActionResult<MeetingExcuseDto>> GenerateExcuse([FromBody] GenerateExcuseRequestDto? criteria = null)
     {
@@ -140,9 +131,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Generate multiple excuses at once
-    /// </summary>
     [HttpPost("generate/bulk")]
     public async Task<ActionResult<List<MeetingExcuseDto>>> GenerateBulkExcuses([FromBody] BulkExcuseGenerationDto request)
     {
@@ -182,9 +170,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Get the excuse of the day
-    /// </summary>
     [HttpGet("excuse-of-the-day")]
     public async Task<ActionResult<MeetingExcuseDto>> GetExcuseOfTheDay()
     {
@@ -215,9 +200,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Save an excuse as favorite
-    /// </summary>
     [HttpPost("favorites")]
     public async Task<ActionResult<MeetingExcuseFavoriteDto>> SaveFavorite([FromBody] SaveFavoriteRequestDto request)
     {
@@ -257,9 +239,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Remove an excuse from favorites
-    /// </summary>
     [HttpDelete("favorites/{favoriteId}")]
     public async Task<IActionResult> RemoveFavorite(int favoriteId)
     {
@@ -295,9 +274,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Get user's favorite excuses
-    /// </summary>
     [HttpGet("favorites")]
     public async Task<ActionResult<List<MeetingExcuseFavoriteDto>>> GetFavorites([FromQuery] int limit = 20)
     {
@@ -332,9 +308,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Submit usage feedback for an excuse
-    /// </summary>
     [HttpPost("usage")]
     public async Task<ActionResult<MeetingExcuseUsageDto>> SubmitUsage([FromBody] SubmitUsageRequestDto request)
     {
@@ -374,9 +347,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Get user's usage history
-    /// </summary>
     [HttpGet("usage")]
     public async Task<ActionResult<List<MeetingExcuseUsageDto>>> GetUsageHistory([FromQuery] int limit = 20)
     {
@@ -411,9 +381,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Get current user's meeting excuse statistics
-    /// </summary>
     [HttpGet("stats")]
     public async Task<ActionResult<MeetingExcuseStatsDto>> GetUserStats()
     {
@@ -449,9 +416,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Get meeting excuse leaderboard
-    /// </summary>
     [HttpGet("leaderboard")]
     public async Task<ActionResult<List<MeetingExcuseLeaderboardEntryDto>>> GetLeaderboard([FromQuery] int limit = 10)
     {
@@ -486,9 +450,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Rate an excuse
-    /// </summary>
     [HttpPost("rate")]
     public async Task<IActionResult> RateExcuse([FromBody] RateExcuseRequestDto request)
     {
@@ -531,9 +492,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Get trending excuses
-    /// </summary>
     [HttpGet("trending")]
     public async Task<ActionResult<List<MeetingExcuseDto>>> GetTrendingExcuses([FromQuery] int limit = 10)
     {
@@ -562,9 +520,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Get top rated excuses
-    /// </summary>
     [HttpGet("top-rated")]
     public async Task<ActionResult<List<MeetingExcuseDto>>> GetTopRatedExcuses([FromQuery] int limit = 10)
     {
@@ -593,9 +548,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Get excuse analytics
-    /// </summary>
     [HttpGet("analytics")]
     public async Task<ActionResult<ExcuseAnalyticsDto>> GetAnalytics()
     {
@@ -625,9 +577,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Get available tags for filtering
-    /// </summary>
     [HttpGet("tags")]
     public async Task<ActionResult<List<string>>> GetAvailableTags()
     {
@@ -651,9 +600,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Initialize meeting excuse stats for the current user (if not exists)
-    /// </summary>
     [HttpPost("initialize")]
     public async Task<IActionResult> InitializeUserStats()
     {
@@ -689,9 +635,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Generate an AI-powered meeting excuse
-    /// </summary>
     [HttpPost("generate/ai")]
     public async Task<ActionResult<MeetingExcuseDto>> GenerateAIExcuse([FromBody] GenerateExcuseRequestDto? criteria = null)
     {
@@ -734,9 +677,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Generate multiple AI-powered excuses at once
-    /// </summary>
     [HttpPost("generate/ai/bulk")]
     public async Task<ActionResult<List<MeetingExcuseDto>>> GenerateAIBulkExcuses([FromBody] BulkExcuseGenerationDto request)
     {
@@ -776,9 +716,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Generate a personalized AI excuse based on user profile and history
-    /// </summary>
     [HttpPost("generate/ai/personalized")]
     public async Task<ActionResult<MeetingExcuseDto>> GeneratePersonalizedAIExcuse([FromBody] GenerateExcuseRequestDto? criteria = null)
     {
@@ -821,9 +758,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Get AI service status and usage statistics
-    /// </summary>
     [HttpGet("ai/status")]
     public async Task<ActionResult<object>> GetAIStatus()
     {
@@ -835,7 +769,6 @@ public class MeetingExcuseController : ControllerBase
                 return Unauthorized(new { message = errorMessage });
             }
 
-            // Get user's AI usage stats (you can implement this)
             var stats = await _meetingExcuseService.GetUserStatsAsync(username);
 
             return Ok(new
@@ -844,7 +777,6 @@ public class MeetingExcuseController : ControllerBase
                 userStats = new
                 {
                     totalExcusesGenerated = stats.TotalExcusesGenerated,
-                    // Add AI-specific stats here
                 },
                 features = new
                 {
@@ -867,9 +799,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Generate excuse with mixed AI and database sources
-    /// </summary>
     [HttpPost("generate/smart")]
     public async Task<ActionResult<MeetingExcuseDto>> GenerateSmartExcuse([FromBody] AIExcuseGenerationDto request)
     {
@@ -887,12 +816,10 @@ public class MeetingExcuseController : ControllerBase
 
             if (request.UseAI)
             {
-                // Use AI generation
                 excuse = await _meetingExcuseService.GeneratePersonalizedAIExcuseAsync(username, request.Criteria);
             }
             else
             {
-                // Use database excuses
                 excuse = await _meetingExcuseService.GenerateRandomExcuseAsync(username, request.Criteria);
             }
 
@@ -917,9 +844,6 @@ public class MeetingExcuseController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Get AI excuse samples for preview
-    /// </summary>
     [HttpGet("ai/samples")]
     public async Task<ActionResult<List<object>>> GetAISamples()
     {
@@ -931,7 +855,6 @@ public class MeetingExcuseController : ControllerBase
                 return Unauthorized(new { message = errorMessage });
             }
 
-            // Generate sample excuses for different categories
             var samples = new List<object>();
             var categories = new[] { MeetingCategory.DailyStandup, MeetingCategory.ClientMeeting, MeetingCategory.TeamBuilding };
             var types = new[] { ExcuseType.Technical, ExcuseType.Personal, ExcuseType.Creative };
@@ -962,7 +885,6 @@ public class MeetingExcuseController : ControllerBase
                 }
                 catch
                 {
-                    // Skip if individual sample fails
                     continue;
                 }
             }

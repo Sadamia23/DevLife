@@ -18,9 +18,6 @@ namespace DevLife.Controllers
             _logger = logger;
         }
 
-        /// <summary>
-        /// Helper method to safely check session and authentication
-        /// </summary>
         private (bool IsValid, string Username, string ErrorMessage) ValidateSession()
         {
             try
@@ -52,9 +49,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Get bug chase dashboard with user stats, leaderboard, and recent games
-        /// </summary>
         [HttpGet("dashboard")]
         public async Task<ActionResult<BugChaseDashboardDto>> GetDashboard()
         {
@@ -92,9 +86,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Submit a new bug chase score
-        /// </summary>
         [HttpPost("score")]
         public async Task<ActionResult<BugChaseGameResultDto>> SubmitScore([FromBody] BugChaseScoreDto scoreDto)
         {
@@ -144,9 +135,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Get current user's bug chase statistics
-        /// </summary>
         [HttpGet("stats")]
         public async Task<ActionResult<BugChaseStatsDto>> GetUserStats()
         {
@@ -184,9 +172,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Get bug chase leaderboard
-        /// </summary>
         [HttpGet("leaderboard")]
         public async Task<ActionResult<List<BugChaseLeaderboardEntryDto>>> GetLeaderboard([FromQuery] int limit = 5)
         {
@@ -224,9 +209,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Get user's recent bug chase games
-        /// </summary>
         [HttpGet("recent")]
         public async Task<ActionResult<List<BugChaseGameResultDto>>> GetRecentGames([FromQuery] int limit = 10)
         {
@@ -264,9 +246,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Initialize bug chase stats for the current user (if not exists)
-        /// </summary>
         [HttpPost("initialize")]
         public async Task<IActionResult> InitializeUserStats()
         {

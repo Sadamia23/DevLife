@@ -2,10 +2,10 @@
 
 public enum ExcuseType
 {
-    Technical = 1,     // "Server caught fire", "Database is corrupted"
-    Personal = 2,      // "Cat broke into production", "Neighbor's WiFi issues"
-    Creative = 3,      // "AI gained consciousness", "Time-space continuum bug"
-    Health = 4,        // "Code-induced migraine", "RSI from too much typing"
-    Emergency = 5,     // "Production is down", "Critical security breach"
-    Mysterious = 6     // Unexplainable phenomena
+    Technical = 1,
+    Personal = 2,  
+    Creative = 3,
+    Health = 4,
+    Emergency = 5,   
+    Mysterious = 6     
 }

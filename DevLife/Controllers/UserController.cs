@@ -18,10 +18,6 @@ namespace Developers.Controllers
             _context = context;
         }
 
-        /// <summary>
-        /// Get all users (requires authentication)
-        /// </summary>
-        /// <returns>List of all users</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserProfileDto>>> GetUsers()
         {
@@ -50,11 +46,6 @@ namespace Developers.Controllers
             return Ok(users);
         }
 
-        /// <summary>
-        /// Get user by username
-        /// </summary>
-        /// <param name="username">Username to search for</param>
-        /// <returns>User profile</returns>
         [HttpGet("{username}")]
         public async Task<ActionResult<UserProfileDto>> GetUser(string username)
         {

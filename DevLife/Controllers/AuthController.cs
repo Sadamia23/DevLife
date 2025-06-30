@@ -16,11 +16,6 @@ namespace DevLife.Controllers
             _authService = authService;
         }
 
-        /// <summary>
-        /// Register a new user
-        /// </summary>
-        /// <param name="registerDto">User registration data</param>
-        /// <returns>Registration result with user profile</returns>
         [HttpPost("register")]
         public async Task<ActionResult<AuthResponse>> Register([FromBody] RegisterDto registerDto)
         {
@@ -40,18 +35,12 @@ namespace DevLife.Controllers
                 return BadRequest(result);
             }
 
-            // Set session
             HttpContext.Session.SetString("Username", registerDto.Username);
             HttpContext.Session.SetString("UserId", result.User!.Id.ToString());
 
             return Ok(result);
         }
 
-        /// <summary>
-        /// Login user with username only
-        /// </summary>
-        /// <param name="loginDto">Login credentials</param>
-        /// <returns>Login result with user profile</returns>
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginDto loginDto)
         {
@@ -71,17 +60,12 @@ namespace DevLife.Controllers
                 return NotFound(result);
             }
 
-            // Set session
             HttpContext.Session.SetString("Username", loginDto.Username);
             HttpContext.Session.SetString("UserId", result.User!.Id.ToString());
 
             return Ok(result);
         }
 
-        /// <summary>
-        /// Get current user profile
-        /// </summary>
-        /// <returns>Current user profile</returns>
         [HttpGet("profile")]
         public async Task<ActionResult<UserProfileDto>> GetProfile()
         {
@@ -102,10 +86,6 @@ namespace DevLife.Controllers
             return Ok(userProfile);
         }
 
-        /// <summary>
-        /// Logout current user
-        /// </summary>
-        /// <returns>Logout confirmation</returns>
         [HttpPost("logout")]
         public IActionResult Logout()
         {
@@ -113,10 +93,6 @@ namespace DevLife.Controllers
             return Ok(new { message = "Logged out successfully" });
         }
 
-        /// <summary>
-        /// Check if user is authenticated
-        /// </summary>
-        /// <returns>Authentication status</returns>
         [HttpGet("status")]
         public IActionResult GetAuthStatus()
         {
@@ -130,11 +106,6 @@ namespace DevLife.Controllers
             });
         }
 
-        /// <summary>
-        /// Calculate zodiac sign for a given date
-        /// </summary>
-        /// <param name="date">Date of birth</param>
-        /// <returns>Zodiac sign</returns>
         [HttpGet("zodiac")]
         public IActionResult GetZodiacSign([FromQuery] DateTime date)
         {

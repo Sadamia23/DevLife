@@ -2,8 +2,8 @@
 
 public enum RoastSeverity
 {
-    Gentle = 0,     // Light teasing, encouraging
-    Medium = 1,     // Standard roasting with humor
-    Brutal = 2,     // Harsh but fair criticism
-    Devastating = 3 // For truly terrible code (rarely used)
+    Gentle = 0,  
+    Medium = 1,   
+    Brutal = 2,  
+    Devastating = 3 
 }

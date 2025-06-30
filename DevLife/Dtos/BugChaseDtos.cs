@@ -75,7 +75,6 @@ public class BugChaseDashboardDto
     public List<BugChaseGameResultDto> RecentGames { get; set; } = new();
 }
 
-// Game-specific interfaces for the frontend game engine
 public interface GameObject
 {
     int X { get; set; }

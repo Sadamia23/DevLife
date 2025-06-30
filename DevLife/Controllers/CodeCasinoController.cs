@@ -18,14 +18,10 @@ namespace DevLife.Controllers
             _logger = logger;
         }
 
-        /// <summary>
-        /// Helper method to safely check session and authentication
-        /// </summary>
         private (bool IsValid, string Username, string UserId, string ErrorMessage) ValidateSession()
         {
             try
             {
-                // Check if session is available
                 if (!HttpContext.Session.IsAvailable)
                 {
                     _logger.LogError("Session is not available for request");
@@ -61,9 +57,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Debug endpoint to check authentication and session state
-        /// </summary>
         [HttpGet("debug/auth")]
         public IActionResult DebugAuth()
         {
@@ -117,9 +110,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Get casino dashboard with user stats, leaderboard, and daily challenge
-        /// </summary>
         [HttpGet("dashboard")]
         public async Task<ActionResult<CasinoStatsResponse>> GetDashboard()
         {
@@ -157,9 +147,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Get a random code challenge for the user
-        /// </summary>
         [HttpGet("challenge")]
         public async Task<ActionResult<CodeChallengeDto>> GetRandomChallenge()
         {
@@ -197,9 +184,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Get today's daily challenge
-        /// </summary>
         [HttpGet("daily-challenge")]
         public async Task<ActionResult<DailyChallengeDto>> GetDailyChallenge()
         {
@@ -237,9 +221,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Place a bet on a code challenge
-        /// </summary>
         [HttpPost("bet")]
         public async Task<ActionResult<GameResultDto>> PlaceBet([FromBody] PlaceBetDto betDto)
         {
@@ -288,9 +269,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Get current user's casino statistics
-        /// </summary>
         [HttpGet("stats")]
         public async Task<ActionResult<UserStatsDto>> GetUserStats()
         {
@@ -328,9 +306,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Get casino leaderboard
-        /// </summary>
         [HttpGet("leaderboard")]
         public async Task<ActionResult<List<LeaderboardEntryDto>>> GetLeaderboard([FromQuery] int limit = 10)
         {
@@ -368,9 +343,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Initialize casino stats for the current user (if not exists)
-        /// </summary>
         [HttpPost("initialize")]
         public async Task<IActionResult> InitializeUserStats()
         {

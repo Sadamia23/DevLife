@@ -19,9 +19,6 @@ namespace DevLife.Controllers
             _logger = logger;
         }
 
-        /// <summary>
-        /// Helper method to safely check session and authentication
-        /// </summary>
         private (bool IsValid, string Username, string UserId, string ErrorMessage) ValidateSession()
         {
             try
@@ -61,9 +58,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Get code roast dashboard with user stats and recent roasts
-        /// </summary>
         [HttpGet("dashboard")]
         public async Task<ActionResult<CodeRoastDashboardDto>> GetDashboard()
         {
@@ -101,9 +95,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Get a coding task based on user's tech stack and specified difficulty
-        /// </summary>
         [HttpGet("task")]
         public async Task<ActionResult<CodeRoastTaskDto>> GetTask([FromQuery] string difficulty = "junior")
         {
@@ -117,7 +108,6 @@ namespace DevLife.Controllers
                     return Unauthorized(new { message = errorMessage });
                 }
 
-                // Parse difficulty level
                 if (!Enum.TryParse<ExperienceLevel>(difficulty, true, out var difficultyLevel))
                 {
                     difficultyLevel = ExperienceLevel.Junior;
@@ -147,9 +137,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Submit code solution for roasting/evaluation
-        /// </summary>
         [HttpPost("submit")]
         public async Task<ActionResult<CodeRoastResultDto>> SubmitCode([FromBody] CodeRoastSubmissionDto submissionDto)
         {
@@ -198,9 +185,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Get user's code roast statistics
-        /// </summary>
         [HttpGet("stats")]
         public async Task<ActionResult<CodeRoastStatsDto>> GetUserStats()
         {
@@ -238,9 +222,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Get user's roast history
-        /// </summary>
         [HttpGet("history")]
         public async Task<ActionResult<List<CodeRoastResultDto>>> GetRoastHistory([FromQuery] int limit = 10)
         {
@@ -278,9 +259,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Get hall of fame - best and worst roasts
-        /// </summary>
         [HttpGet("hall-of-fame")]
         public async Task<ActionResult<CodeRoastHallOfFameDto>> GetHallOfFame()
         {
@@ -312,9 +290,6 @@ namespace DevLife.Controllers
             }
         }
 
-        /// <summary>
-        /// Initialize code roast stats for the current user (if not exists)
-        /// </summary>
         [HttpPost("initialize")]
         public async Task<IActionResult> InitializeUserStats()
         {
