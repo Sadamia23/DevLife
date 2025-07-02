@@ -8,5 +8,4 @@ public interface IAIMeetingExcuseService
 
     Task<List<AIMeetingExcuseResponseDto>> GenerateBulkExcusesAsync(AIMeetingExcuseRequestDto request, int count = 3);
 
-    Task<AIMeetingExcuseResponseDto?> GeneratePersonalizedExcuseAsync(string username, AIMeetingExcuseRequestDto request);
 }

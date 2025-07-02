@@ -195,9 +195,6 @@ namespace DevLife.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChallengeDate")
-                        .IsUnique();
-
                     b.HasIndex("CodeChallengeId");
 
                     b.ToTable("DailyChallenges");
@@ -215,12 +212,10 @@ namespace DevLife.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AIChallengeDescription")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AIChallengeTitle")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AICorrectCode")
                         .HasColumnType("nvarchar(max)");
@@ -229,8 +224,7 @@ namespace DevLife.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AITopic")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("CodeChallengeId")
                         .HasColumnType("int");
@@ -308,8 +302,7 @@ namespace DevLife.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserStats");
                 });
@@ -580,6 +573,455 @@ namespace DevLife.Migrations
                     b.ToTable("CodeRoastTasks");
                 });
 
+            modelBuilder.Entity("DevLife.Models.DevDating.ChatMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsAIGenerated")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MatchId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MatchId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("ChatMessages");
+                });
+
+            modelBuilder.Entity("DevLife.Models.DevDating.DatingProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Bio")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Preference")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("DatingProfiles");
+                });
+
+            modelBuilder.Entity("DevLife.Models.DevDating.DatingStats", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastActiveDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TotalLikes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalMatches")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalMessages")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalSwipes")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("DatingStats");
+                });
+
+            modelBuilder.Entity("DevLife.Models.DevDating.Match", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("MatchedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("User1Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("User2Id")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("User2Id");
+
+                    b.HasIndex("User1Id", "User2Id")
+                        .IsUnique();
+
+                    b.ToTable("Matches");
+                });
+
+            modelBuilder.Entity("DevLife.Models.DevDating.SwipeAction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsLike")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("SwipedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SwipedUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SwiperId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SwipedUserId");
+
+                    b.HasIndex("SwiperId", "SwipedUserId")
+                        .IsUnique();
+
+                    b.ToTable("SwipeActions");
+                });
+
+            modelBuilder.Entity("DevLife.Models.GitHubAnalysis.GitHubAnalysisFavorite", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CustomName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("GitHubAnalysisResultId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SavedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GitHubAnalysisResultId");
+
+                    b.HasIndex("UserId", "GitHubAnalysisResultId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "SavedAt");
+
+                    b.ToTable("GitHubAnalysisFavorites");
+                });
+
+            modelBuilder.Entity("DevLife.Models.GitHubAnalysis.GitHubAnalysisResult", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AnalysisDetailsJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("AnalyzedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CelebrityDevelopersJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CodeCommentingScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CommitMessageQuality")
+                        .HasColumnType("int");
+
+                    b.Property<string>("GitHubUsername")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("OverallScore")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PersonalityDescription")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("PersonalityType")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("ProjectStructureScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RepositoriesAnalyzed")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShareCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("SharedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("StrengthsJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TotalCommits")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalFiles")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VariableNamingScore")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WeaknessesJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GitHubUsername");
+
+                    b.HasIndex("OverallScore");
+
+                    b.HasIndex("IsPublic", "ShareCount");
+
+                    b.HasIndex("UserId", "AnalyzedAt");
+
+                    b.ToTable("GitHubAnalysisResults");
+                });
+
+            modelBuilder.Entity("DevLife.Models.GitHubAnalysis.GitHubAnalysisStats", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("AverageCommentingScore")
+                        .HasColumnType("float");
+
+                    b.Property<double>("AverageCommitQuality")
+                        .HasColumnType("float");
+
+                    b.Property<double>("AverageNamingScore")
+                        .HasColumnType("float");
+
+                    b.Property<double>("AverageOverallScore")
+                        .HasColumnType("float");
+
+                    b.Property<double>("AverageStructureScore")
+                        .HasColumnType("float");
+
+                    b.Property<int>("CurrentStreak")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FavoriteCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FavoriteLanguage")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("FirstAnalysis")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastAnalysis")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LongestStreak")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MostCommonPersonalityType")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("RecentAnalysesJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ShareCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalAnalyses")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalCommitsAnalyzed")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalRepositoriesAnalyzed")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UnlockedAchievementsJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("GitHubAnalysisStats");
+                });
+
+            modelBuilder.Entity("DevLife.Models.GitHubAnalysis.GitHubRepository", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AnalysisResultId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AnalyzedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CommitsAnalyzed")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("FilesAnalyzed")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ForksCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("PrimaryLanguage")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("RepoCommentingScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RepoCommitQuality")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RepoNamingScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RepoStructureScore")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RepositoryDetailsJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StarsCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnalysisResultId");
+
+                    b.ToTable("GitHubRepositories");
+                });
+
             modelBuilder.Entity("DevLife.Models.MeetingExcuse.MeetingExcuse", b =>
                 {
                     b.Property<int>("Id")
@@ -676,10 +1118,7 @@ namespace DevLife.Migrations
 
                     b.HasIndex("MeetingExcuseId");
 
-                    b.HasIndex("UserId", "MeetingExcuseId")
-                        .IsUnique();
-
-                    b.HasIndex("UserId", "SavedAt");
+                    b.HasIndex("UserId");
 
                     b.ToTable("MeetingExcuseFavorites");
                 });
@@ -693,31 +1132,25 @@ namespace DevLife.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<double>("AverageBelievability")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValue(0.0);
+                        .HasColumnType("float");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("CurrentStreak")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
-                    b.Property<string>("FavoriteCategory")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("FavoriteCategory")
+                        .HasColumnType("int");
 
-                    b.Property<string>("FavoriteType")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("FavoriteType")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("LastExcuseGenerated")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("LongestStreak")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.Property<string>("RecentExcusesJson")
                         .IsRequired()
@@ -725,14 +1158,10 @@ namespace DevLife.Migrations
                         .HasColumnType("nvarchar(2000)");
 
                     b.Property<int>("TotalExcusesGenerated")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.Property<int>("TotalFavorites")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.Property<string>("UnlockedAchievementsJson")
                         .IsRequired()
@@ -747,16 +1176,7 @@ namespace DevLife.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentStreak");
-
-                    b.HasIndex("LastExcuseGenerated");
-
-                    b.HasIndex("LongestStreak");
-
-                    b.HasIndex("TotalExcusesGenerated");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("MeetingExcuseStats");
                 });
@@ -787,11 +1207,9 @@ namespace DevLife.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UsedAt");
+                    b.HasIndex("MeetingExcuseId");
 
-                    b.HasIndex("MeetingExcuseId", "UsedAt");
-
-                    b.HasIndex("UserId", "UsedAt");
+                    b.HasIndex("UserId");
 
                     b.ToTable("MeetingExcuseUsages");
                 });
@@ -882,8 +1300,7 @@ namespace DevLife.Migrations
                 {
                     b.HasOne("DevLife.Models.CodeCasino.CodeChallenge", "CodeChallenge")
                         .WithMany()
-                        .HasForeignKey("CodeChallengeId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("CodeChallengeId");
 
                     b.HasOne("DevLife.Models.User", "User")
                         .WithMany()
@@ -935,6 +1352,137 @@ namespace DevLife.Migrations
                     b.Navigation("Task");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DevLife.Models.DevDating.ChatMessage", b =>
+                {
+                    b.HasOne("DevLife.Models.DevDating.Match", "Match")
+                        .WithMany("ChatMessages")
+                        .HasForeignKey("MatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DevLife.Models.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Match");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("DevLife.Models.DevDating.DatingProfile", b =>
+                {
+                    b.HasOne("DevLife.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DevLife.Models.DevDating.DatingStats", b =>
+                {
+                    b.HasOne("DevLife.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DevLife.Models.DevDating.Match", b =>
+                {
+                    b.HasOne("DevLife.Models.User", "User1")
+                        .WithMany()
+                        .HasForeignKey("User1Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DevLife.Models.User", "User2")
+                        .WithMany()
+                        .HasForeignKey("User2Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User1");
+
+                    b.Navigation("User2");
+                });
+
+            modelBuilder.Entity("DevLife.Models.DevDating.SwipeAction", b =>
+                {
+                    b.HasOne("DevLife.Models.User", "SwipedUser")
+                        .WithMany()
+                        .HasForeignKey("SwipedUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DevLife.Models.User", "Swiper")
+                        .WithMany()
+                        .HasForeignKey("SwiperId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("SwipedUser");
+
+                    b.Navigation("Swiper");
+                });
+
+            modelBuilder.Entity("DevLife.Models.GitHubAnalysis.GitHubAnalysisFavorite", b =>
+                {
+                    b.HasOne("DevLife.Models.GitHubAnalysis.GitHubAnalysisResult", "GitHubAnalysisResult")
+                        .WithMany("Favorites")
+                        .HasForeignKey("GitHubAnalysisResultId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DevLife.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("GitHubAnalysisResult");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DevLife.Models.GitHubAnalysis.GitHubAnalysisResult", b =>
+                {
+                    b.HasOne("DevLife.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DevLife.Models.GitHubAnalysis.GitHubAnalysisStats", b =>
+                {
+                    b.HasOne("DevLife.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DevLife.Models.GitHubAnalysis.GitHubRepository", b =>
+                {
+                    b.HasOne("DevLife.Models.GitHubAnalysis.GitHubAnalysisResult", "AnalysisResult")
+                        .WithMany()
+                        .HasForeignKey("AnalysisResultId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AnalysisResult");
                 });
 
             modelBuilder.Entity("DevLife.Models.MeetingExcuse.MeetingExcuseFavorite", b =>
@@ -989,6 +1537,16 @@ namespace DevLife.Migrations
             modelBuilder.Entity("DevLife.Models.CodeRoast.CodeRoastTask", b =>
                 {
                     b.Navigation("Submissions");
+                });
+
+            modelBuilder.Entity("DevLife.Models.DevDating.Match", b =>
+                {
+                    b.Navigation("ChatMessages");
+                });
+
+            modelBuilder.Entity("DevLife.Models.GitHubAnalysis.GitHubAnalysisResult", b =>
+                {
+                    b.Navigation("Favorites");
                 });
 
             modelBuilder.Entity("DevLife.Models.MeetingExcuse.MeetingExcuse", b =>

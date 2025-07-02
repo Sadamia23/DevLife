@@ -1,12 +1,8 @@
-﻿using DevLife.Database;
-using DevLife.Dtos;
+﻿using DevLife.Dtos;
 using DevLife.Enums;
 using DevLife.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Text.Json;
-
-namespace DevLife.Services.Implementation;
 
 public class OpenAIMeetingExcuseService : IAIMeetingExcuseService
 {
@@ -14,18 +10,15 @@ public class OpenAIMeetingExcuseService : IAIMeetingExcuseService
     private readonly string _apiKey;
     private readonly string _apiUrl = "https://api.openai.com/v1/chat/completions";
     private readonly ILogger<OpenAIMeetingExcuseService> _logger;
-    private readonly ApplicationDbContext _context;
 
     public OpenAIMeetingExcuseService(
         HttpClient httpClient,
         IConfiguration configuration,
-        ILogger<OpenAIMeetingExcuseService> logger,
-        ApplicationDbContext context)
+        ILogger<OpenAIMeetingExcuseService> logger)
     {
         _httpClient = httpClient;
         _apiKey = configuration["OpenAI:ApiKey"] ?? throw new ArgumentNullException("OpenAI:ApiKey not configured");
         _logger = logger;
-        _context = context;
 
         _httpClient.DefaultRequestHeaders.Clear();
         _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_apiKey}");
@@ -35,6 +28,9 @@ public class OpenAIMeetingExcuseService : IAIMeetingExcuseService
     {
         try
         {
+            _logger.LogInformation("Generating excuse for category: {Category}, type: {Type}",
+                request.Category, request.Type);
+
             var prompt = BuildExcuseGenerationPrompt(request);
             var response = await CallOpenAIAsync(prompt);
 
@@ -43,6 +39,7 @@ public class OpenAIMeetingExcuseService : IAIMeetingExcuseService
                 return ParseExcuseResponse(response, request);
             }
 
+            _logger.LogWarning("OpenAI returned null response");
             return null;
         }
         catch (Exception ex)
@@ -60,13 +57,17 @@ public class OpenAIMeetingExcuseService : IAIMeetingExcuseService
         // Generate multiple excuses with slight variations
         for (int i = 0; i < count; i++)
         {
-            var modifiedRequest = request;
-
-            // Add variation to get different results
-            if (i > 0)
+            var modifiedRequest = new AIMeetingExcuseRequestDto
             {
-                modifiedRequest.Context = $"{request.Context} (variation {i + 1})";
-            }
+                Category = request.Category,
+                Type = request.Type,
+                TargetBelievability = request.TargetBelievability,
+                Mood = request.Mood,
+                UserTechStack = request.UserTechStack,
+                UserExperience = request.UserExperience,
+                Context = $"{request.Context} (variation {i + 1})",
+                AvoidKeywords = request.AvoidKeywords
+            };
 
             var excuse = await GenerateExcuseAsync(modifiedRequest);
             if (excuse != null)
@@ -81,39 +82,6 @@ public class OpenAIMeetingExcuseService : IAIMeetingExcuseService
         return excuses;
     }
 
-    public async Task<AIMeetingExcuseResponseDto?> GeneratePersonalizedExcuseAsync(string username, AIMeetingExcuseRequestDto request)
-    {
-        try
-        {
-            // Get user info for personalization
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-            if (user != null)
-            {
-                request.UserTechStack = user.TechStack.ToString();
-                request.UserExperience = user.Experience.ToString();
-            }
-
-            // Get user's recent excuse usage patterns
-            var recentUsage = await _context.MeetingExcuseUsages
-                .Include(u => u.MeetingExcuse)
-                .Where(u => u.User.Username == username)
-                .OrderByDescending(u => u.UsedAt)
-                .Take(5)
-                .Select(u => u.MeetingExcuse.Type.ToString())
-                .ToListAsync();
-
-            // Avoid recently used types
-            request.Context = $"{request.Context} (User recently used: {string.Join(", ", recentUsage)})";
-
-            return await GenerateExcuseAsync(request);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error generating personalized excuse for user {Username}", username);
-            return await GenerateExcuseAsync(request); // Fallback to non-personalized
-        }
-    }
-
     private string BuildExcuseGenerationPrompt(AIMeetingExcuseRequestDto request)
     {
         var categoryDescriptions = new Dictionary<MeetingCategory, string>
@@ -123,7 +91,11 @@ public class OpenAIMeetingExcuseService : IAIMeetingExcuseService
             [MeetingCategory.ClientMeeting] = "client meeting or presentation with external stakeholders",
             [MeetingCategory.TeamBuilding] = "team building activity or social work event",
             [MeetingCategory.CodeReview] = "code review session with peer feedback",
-            [MeetingCategory.Retrospective] = "sprint retrospective with team reflection"
+            [MeetingCategory.Retrospective] = "sprint retrospective with team reflection",
+            [MeetingCategory.Planning] = "project planning session",
+            [MeetingCategory.OneOnOne] = "one-on-one meeting with manager",
+            [MeetingCategory.AllHands] = "company all-hands meeting",
+            [MeetingCategory.Training] = "training or learning session"
         };
 
         var typeDescriptions = new Dictionary<ExcuseType, string>
@@ -153,28 +125,19 @@ public class OpenAIMeetingExcuseService : IAIMeetingExcuseService
         };
 
         return $@"
-You are the world's most creative developer excuse generator. You specialize in creating hilarious, developer-focused excuses for avoiding meetings. Your excuses are legendary in the programming community.
+You are the world's most creative developer excuse generator. You specialize in creating hilarious, developer-focused excuses for avoiding meetings.
 
 **Excuse Requirements:**
 - **Meeting Type:** {request.Category} - {categoryDescriptions.GetValueOrDefault(request.Category, "general meeting")}
 - **Excuse Style:** {request.Type} - {typeDescriptions.GetValueOrDefault(request.Type, "general excuse")}
 - **Believability Target:** {request.TargetBelievability}/10 - {believabilityGuidance}
-- **Developer Context:** {request.UserTechStack} developer with {request.UserExperience} experience
 - **Mood:** {moodGuidance}
+- **Tech Stack:** {request.UserTechStack ?? "General Developer"}
+- **Experience:** {request.UserExperience ?? "Mid-level"}
 - **Additional Context:** {request.Context}
 
 **Developer Culture References:**
 Use programming concepts, tech stack terminology, development tools, coding patterns, software engineering principles, debugging scenarios, deployment issues, version control problems, infrastructure challenges, or developer lifestyle quirks.
-
-**Creativity Guidelines:**
-- Reference specific technologies, frameworks, or tools
-- Use programming terminology naturally
-- Include developer pain points (merge conflicts, production bugs, deadlines)
-- Make it relatable to real developer experiences
-- Add technical details that make it sound authentic
-- Include humor that only developers would truly appreciate
-
-**Avoid these if specified:** {string.Join(", ", request.AvoidKeywords ?? new List<string>())}
 
 **Response Format (JSON):**
 {{
@@ -184,23 +147,9 @@ Use programming concepts, tech stack terminology, development tools, coding patt
   ""believabilityScore"": {request.TargetBelievability ?? 7},
   ""reasoning"": ""Why this excuse works and when to use it"",
   ""tags"": [""relevant"", ""tags"", ""for"", ""filtering""],
-  ""techStackUsed"": ""{request.UserTechStack}"",
   ""humorLevel"": 8,
   ""usage"": ""Best delivery method and timing for this excuse""
 }}
-
-**Examples of Great Developer Excuses:**
-- ""My rubber duck debugging session has evolved into a philosophical debate about the nature of existence""
-- ""I'm experiencing a stack overflow in my social interaction buffer""
-- ""Git blame shows this meeting was my fault, but I'm currently in a detached HEAD state""
-- ""My work-life balance microservice is down for emergency maintenance""
-
-**Important:** 
-- Keep it developer-focused and tech-savvy
-- Make it genuinely funny, not just absurd
-- Ensure it fits the meeting type and excuse style
-- Balance humor with the requested believability level
-- Make developers reading it think ""I wish I thought of that!""
 
 Generate the perfect developer meeting excuse now:";
     }
@@ -209,19 +158,19 @@ Generate the perfect developer meeting excuse now:";
     {
         var requestBody = new
         {
-            model = "gpt-4", // Using GPT-4 for better creativity and humor
+            model = "gpt-4",
             messages = new[]
             {
                 new {
                     role = "system",
-                    content = "You are a legendary developer excuse generator with years of experience in tech humor. You understand developer culture deeply and create excuses that make developers laugh while still being practical. Always respond with valid JSON."
+                    content = "You are a legendary developer excuse generator with years of experience in tech humor. Always respond with valid JSON."
                 },
                 new { role = "user", content = prompt }
             },
             max_tokens = 800,
-            temperature = 0.9, // High temperature for maximum creativity
-            presence_penalty = 0.3, // Encourage variety
-            frequency_penalty = 0.3 // Avoid repetition
+            temperature = 0.9,
+            presence_penalty = 0.3,
+            frequency_penalty = 0.3
         };
 
         var json = JsonSerializer.Serialize(requestBody);
@@ -277,7 +226,7 @@ Generate the perfect developer meeting excuse now:";
                     BelievabilityScore = Math.Max(1, Math.Min(10, excuseData.BelievabilityScore)),
                     Reasoning = excuseData.Reasoning ?? "AI-generated excuse",
                     Tags = excuseData.Tags ?? new List<string>(),
-                    TechStackUsed = excuseData.TechStackUsed ?? request.UserTechStack ?? "General",
+                    TechStackUsed = request.UserTechStack ?? "General",
                     HumorLevel = Math.Max(1, Math.Min(10, excuseData.HumorLevel)),
                     Usage = excuseData.Usage ?? "Use with confidence",
                     IsAIGenerated = true
@@ -288,56 +237,29 @@ Generate the perfect developer meeting excuse now:";
         {
             _logger.LogError(ex, "Failed to parse AI excuse response: {Response}", response);
 
-            // Fallback: try to extract excuse text manually
-            if (response.Contains("excuseText"))
+            // Fallback: create a simple excuse
+            return new AIMeetingExcuseResponseDto
             {
-                return CreateFallbackExcuse(response, request);
-            }
+                ExcuseText = "My AI excuse generator experienced a parsing error - how meta is that?",
+                Category = request.Category,
+                Type = request.Type,
+                BelievabilityScore = request.TargetBelievability ?? 7,
+                Reasoning = "Backup excuse due to AI parsing issues",
+                Tags = new List<string> { "AI", "fallback", "meta" },
+                TechStackUsed = request.UserTechStack ?? "General",
+                HumorLevel = 6,
+                Usage = "Use when all else fails",
+                IsAIGenerated = true
+            };
         }
 
         return null;
-    }
-
-    private AIMeetingExcuseResponseDto CreateFallbackExcuse(string response, AIMeetingExcuseRequestDto request)
-    {
-        // Extract excuse text manually if JSON parsing fails
-        var excuseText = "My AI excuse generator experienced a parsing error - how meta is that?";
-
-        // Try to extract the excuse text between quotes
-        var startIndex = response.IndexOf("\"excuseText\":");
-        if (startIndex != -1)
-        {
-            var textStart = response.IndexOf("\"", startIndex + 13);
-            if (textStart != -1)
-            {
-                var textEnd = response.IndexOf("\"", textStart + 1);
-                if (textEnd != -1)
-                {
-                    excuseText = response.Substring(textStart + 1, textEnd - textStart - 1);
-                }
-            }
-        }
-
-        return new AIMeetingExcuseResponseDto
-        {
-            ExcuseText = excuseText,
-            Category = request.Category,
-            Type = request.Type,
-            BelievabilityScore = request.TargetBelievability ?? 7,
-            Reasoning = "Backup excuse due to AI parsing issues",
-            Tags = new List<string> { "AI", "fallback", "meta" },
-            TechStackUsed = request.UserTechStack ?? "General",
-            HumorLevel = 6,
-            Usage = "Use when all else fails",
-            IsAIGenerated = true
-        };
     }
 
     private string CleanJsonResponse(string response)
     {
         var cleanResponse = response.Trim();
 
-        // Remove markdown code blocks
         if (cleanResponse.StartsWith("```json"))
         {
             cleanResponse = cleanResponse.Substring(7);
@@ -379,7 +301,6 @@ Generate the perfect developer meeting excuse now:";
         public int BelievabilityScore { get; set; }
         public string? Reasoning { get; set; }
         public List<string>? Tags { get; set; }
-        public string? TechStackUsed { get; set; }
         public int HumorLevel { get; set; }
         public string? Usage { get; set; }
     }
